@@ -17,6 +17,7 @@
           <div class="font-bold">Peer Assessment</div>
         </div>
       </template>
+      <Message severity="success">I am {{ assessor.name }} ({{ assessor.id }}) reviewing members in {{ assessingsubject }}</Message>
       <AssessForm :pendinglist="pendinglist" @save="addassessment"/>
     </Panel>
     <Panel pt:content:class="flex flex-col gap-2">
@@ -38,6 +39,12 @@ import AssessmentDisplay from './components/AssessmentDisplay.vue';
 import AssessorLogIn from './components/AssessorLogIn.vue';
 import TopBar from './components/TopBar.vue';
 import { ref, computed } from "vue"
+
+const assessor = ref({
+  id: "12321", name: "oiptr"
+})
+
+const assessingsubject = ref("erwatc - dfsafdlk")
 
 const memberlist = ref([
   { id: "324134", name: "1234142" },
