@@ -27,6 +27,7 @@
         </div>
       </template>
       <AssessmentDisplay v-for="asm in assessmentlist" :assessment="asm"></AssessmentDisplay>
+      <Button class="self-end" @click="">Submit Assessment</Button>
     </Panel>
   </div>
 </template>
