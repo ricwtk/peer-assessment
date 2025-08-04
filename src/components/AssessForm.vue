@@ -40,8 +40,8 @@
       </Button>
     </InputGroup>
     <InputGroup class="justify-stretch">
-      <Button v-for="x in ratingcolors" class="!text-xs grow shrink !border-0"
-        :class="'!'+x">
+      <Button disabled v-for="x in ratingColorN+1" class="!text-xs grow shrink !border-0"
+        :class="'rating-color-'+(x-1)">
       </Button>
     </InputGroup>
     <Textarea rows="5" cols="30" placeholder="Justification" v-model="justificationText"/>
@@ -68,15 +68,26 @@ const convertcounttopercentage = (count) => (count-1)*5
 const setrating = (count) => {
   selectedRating.value = convertcounttopercentage(count)
 }
-const ratingcolors = ["bg-red-500", "bg-orange-500", "bg-amber-500", "bg-yellow-500", "bg-lime-500", "bg-green-500", "bg-emerald-500"]
+const ratingColorN = 6
 const getclassforratingbutton = (count) => {
   let rating = convertcounttopercentage(count)
   if (rating > selectedRating.value) { return "!bg-white !text-primary" }
   else {
     let cls = "!text-white"
-    let indexforcolor = Math.round(selectedRating.value/100*ratingcolors.length)
-    return `${cls} !${ratingcolors[indexforcolor]}`
+    let indexforcolor = Math.round(selectedRating.value/100*ratingColorN)
+    return `${cls} rating-color-${indexforcolor}`
   }
 }
 const justificationText = ref("")
 </script>
+
+<style scoped>
+@reference "tailwindcss";
+.rating-color-0 { @apply bg-red-500 }
+.rating-color-1 { @apply bg-orange-500 }
+.rating-color-2 { @apply bg-amber-500 }
+.rating-color-3 { @apply bg-yellow-500 }
+.rating-color-4 { @apply bg-lime-500 }
+.rating-color-5 { @apply bg-green-500 }
+.rating-color-6 { @apply bg-emerald-500 }
+</style>
