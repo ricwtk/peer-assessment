@@ -19,8 +19,7 @@
 <script setup>
 const props = defineProps(["assessment"])
 
-import { ref, computed } from 'vue'
-const ratingColorN = 6
+import { computed } from 'vue'
 const colors = [
   "oklch(63.7% 0.237 25.331)",
   "oklch(70.5% 0.213 47.604)",
@@ -30,6 +29,5 @@ const colors = [
   "oklch(72.3% 0.219 149.579)",
   "oklch(69.6% 0.17 162.48)"
 ]
-console.log(Math.round(props.assessment.rating/100*colors.length))
 const barcolor = computed(() => colors[Math.round(props.assessment.rating/100*colors.length)])
 </script>
