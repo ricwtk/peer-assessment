@@ -46,6 +46,7 @@
     </InputGroup>
     <Textarea rows="5" cols="30" placeholder="Justification" v-model="justificationText"/>
     <Button class="self-end" @click="saveassessment">Add Assessment</Button>
+    <Message severity="error" v-if="errormessage">{{ errormessage }}</Message>
   </Fieldset>
 </template>
 
@@ -80,16 +81,23 @@ const getclassforratingbutton = (count) => {
 }
 const justificationText = ref("")
 
+const errormessage = ref("")
+
 const emit = defineEmits(["save"])
 const saveassessment = () => {
-  emit("save", {
-    members: selectedMembers.value.map(x => ({ id: x.id, name: x.name })),
-    rating: selectedRating.value,
-    justification: justificationText.value
-  })
-  selectedMembers.value = []
-  selectedRating.value = 0
-  justificationText.value = ""
+  if (selectedMembers.value.length == 0) { errormessage.value = "You must rate at least one member" }
+  else if (justificationText.value == "") { errormessage.value = "You must provide a justification" }
+  else {
+    emit("save", {
+      members: selectedMembers.value.map(x => ({ id: x.id, name: x.name })),
+      rating: selectedRating.value,
+      justification: justificationText.value
+    })
+    selectedMembers.value = []
+    selectedRating.value = 0
+    justificationText.value = ""
+    errormessage.value = ""
+  }
 }
 </script>
 
