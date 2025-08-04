@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-5xl flex flex-col gap-2">
+  <div class="w-full max-w-5xl flex flex-col gap-2 m-2">
     <TopBar />
     <Panel>
       <template #header>
@@ -19,7 +19,7 @@
       </template>
       <AssessForm :pendinglist="pendinglist" @save="addassessment"/>
     </Panel>
-    <Panel>
+    <Panel pt:content:class="flex flex-col gap-2">
       <template #header>
         <div class="flex flex-row gap-2 items-center">
           <Tag>Step 3</Tag>
