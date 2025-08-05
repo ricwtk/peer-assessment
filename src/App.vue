@@ -32,6 +32,7 @@
       </template>
       <AssessmentDisplay v-for="asm in assessmentlist" :assessment="asm"></AssessmentDisplay>
       <Button class="self-end" @click="submitAssessments">Submit Assessment</Button>
+      <Message severity="success" v-if="submissionsuccess">{{ submissionsuccess }}</Message>
       <Message severity="error" v-if="submissionerror">{{ submissionerror }}</Message>
     </Panel>
   </div>
@@ -122,9 +123,21 @@ const addassessment = (asm) => {
 }
 
 const submissionerror = ref("")
-function submitAssessments() {
+const submissionsuccess = ref("")
+async function submitAssessments() {
   submissionerror.value = ""
+  submissionsuccess.value = ""
   try {
+    console.log(JSON.stringify({
+      assessor: { id: assessor.value.id, name: assessor.value.name },
+      course: { key: assessingcourse.value.key, code: assessingcourse.value.code, name: assessingcourse.value.name }, 
+      assessments: assessmentlist.value.map(asm => ({
+        members: asm.members.map(x => ({ id: x.id, name: x.name })),
+        rating: asm.rating,
+        justification: asm.justification
+      }))
+    }))
+    console.log(SUBMISSION_ENDPOINT)
     const response = await fetch(`${SUBMISSION_ENDPOINT}`, {
       method: "POST",
       headers: {
@@ -134,7 +147,7 @@ function submitAssessments() {
         assessor: { id: assessor.value.id, name: assessor.value.name },
         course: { key: assessingcourse.value.key, code: assessingcourse.value.code, name: assessingcourse.value.name }, 
         assessments: assessmentlist.value.map(asm => ({
-          members: asm.members.value.map(x => ({ id: x.id, name: x.name })),
+          members: asm.members.map(x => ({ id: x.id, name: x.name })),
           rating: asm.rating,
           justification: asm.justification
         }))
@@ -143,7 +156,10 @@ function submitAssessments() {
 
     if (!response.ok) {
       const errorData = await response.json();
+      submissionerror.value = errorData.error || "Unknown error";
       throw new Error(errorData.error || "Unknown error");
+    } else {
+      submissionsuccess.value = "Submission succeeded, you should receive an email with the submitted details."
     }
   } catch (error) {
     submissionerror.value = error.message;
