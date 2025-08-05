@@ -104,6 +104,7 @@ const loadmembers = (login) => {
   assessingcourse.value.key = login.course.key
   assessingcourse.value.code = login.course.code
   assessingcourse.value.name = login.course.name
+  assessmentlist.value = []
   getStudentGroup(login.course.key, login.assessor.id, login.pin);
 }
 
