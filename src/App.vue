@@ -1,6 +1,13 @@
 <template>
   <div class="w-full max-w-5xl flex flex-col gap-2 m-2">
     <TopBar />
+    <Stepper value="0" class="basis-[0rem]">
+      <StepList>
+        <Step value="1">Your Information</Step>
+        <Step value="2">Peer Assessment</Step>
+        <Step value="3">Submit Assessment</Step>
+      </StepList>
+    </Stepper>
     <Panel>
       <template #header>
         <div class="flex flex-row gap-2 items-center">

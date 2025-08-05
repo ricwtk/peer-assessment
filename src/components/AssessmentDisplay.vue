@@ -1,12 +1,15 @@
 <template>
   <Panel>
     <template #header>
-      <Tag v-for="member in props.assessment.members">
-        <div class="flex flex-col">
-          <span>{{ member.name }}</span>
-          <span class="text-xs">{{ member.id }}</span>
-        </div>
-      </Tag>
+      <div class="grow flex flex-row gap-2">
+        <Tag v-for="member in props.assessment.members">
+          <div class="flex flex-col">
+            <span>{{ member.name }}</span>
+            <span class="text-xs">{{ member.id }}</span>
+          </div>
+        </Tag>
+      </div>
+      <Button icon="pi pi-times"/>
     </template>
     <ProgressBar :value="props.assessment.rating" 
       :pt="{
