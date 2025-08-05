@@ -37,7 +37,7 @@
           <div class="font-bold">Submit Assessment</div>
         </div>
       </template>
-      <AssessmentDisplay v-for="asm in assessmentlist" :assessment="asm"></AssessmentDisplay>
+      <AssessmentDisplay v-for="(asm, index) in assessmentlist" :assessment="asm" @remove="deleteassessment(index)"></AssessmentDisplay>
       <Button class="self-end" @click="submitAssessments">Submit Assessment</Button>
       <Message severity="success" v-if="submissionsuccess">{{ submissionsuccess }}</Message>
       <Message severity="error" v-if="submissionerror">{{ submissionerror }}</Message>
@@ -127,6 +127,9 @@ const assessmentlist = ref([])
 
 const addassessment = (asm) => {
   assessmentlist.value.push(asm)
+}
+const deleteassessment = (index) => {
+  assessmentlist.value.splice(index, 1)
 }
 
 const submissionerror = ref("")

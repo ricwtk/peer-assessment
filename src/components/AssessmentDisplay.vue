@@ -9,7 +9,7 @@
           </div>
         </Tag>
       </div>
-      <Button icon="pi pi-times"/>
+      <Button icon="pi pi-times" @click="remove"/>
     </template>
     <ProgressBar :value="props.assessment.rating" 
       :pt="{
@@ -33,4 +33,6 @@ const colors = [
   "oklch(69.6% 0.17 162.48)"
 ]
 const barcolor = computed(() => colors[Math.round(props.assessment.rating/100*colors.length)])
+const emit = defineEmits(["remove"])
+const remove = () => emit("remove")
 </script>
