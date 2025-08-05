@@ -1,1 +1,2 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+export const SUBMISSION_ENDPOINT = import.meta.env.POWERAUTOMATE_ENDPOINT;

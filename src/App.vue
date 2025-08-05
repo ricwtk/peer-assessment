@@ -31,13 +31,14 @@
         </div>
       </template>
       <AssessmentDisplay v-for="asm in assessmentlist" :assessment="asm"></AssessmentDisplay>
-      <Button class="self-end" @click="">Submit Assessment</Button>
+      <Button class="self-end" @click="submitAssessments">Submit Assessment</Button>
+      <Message severity="error" v-if="submissionerror">{{ submissionerror }}</Message>
     </Panel>
   </div>
 </template>
 
 <script setup>
-import { API_BASE_URL } from './config';
+import { API_BASE_URL, SUBMISSION_ENDPOINT } from './config';
 import AssessForm from './components/AssessForm.vue';
 import AssessmentDisplay from './components/AssessmentDisplay.vue';
 import AssessorLogIn from './components/AssessorLogIn.vue';
@@ -118,6 +119,36 @@ const assessmentlist = ref([])
 
 const addassessment = (asm) => {
   assessmentlist.value.push(asm)
+}
+
+const submissionerror = ref("")
+function submitAssessments() {
+  submissionerror.value = ""
+  try {
+    const response = await fetch(`${SUBMISSION_ENDPOINT}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        assessor: { id: assessor.value.id, name: assessor.value.name },
+        course: { key: assessingcourse.value.key, code: assessingcourse.value.code, name: assessingcourse.value.name }, 
+        assessments: assessmentlist.value.map(asm => ({
+          members: asm.members.value.map(x => ({ id: x.id, name: x.name })),
+          rating: asm.rating,
+          justification: asm.justification
+        }))
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Unknown error");
+    }
+  } catch (error) {
+    submissionerror.value = error.message;
+    console.error("Error submitting assessments:", error.message);
+  }
 }
 
 </script>
