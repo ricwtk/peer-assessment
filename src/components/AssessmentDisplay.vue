@@ -11,10 +11,12 @@
       </div>
       <Button icon="pi pi-times" @click="remove"/>
     </template>
-    <ProgressBar :value="props.assessment.rating" 
-      :pt="{
-        value: { style: `background: ${barcolor}` }
-      }"></ProgressBar>
+    <div class="grid gap-2 grid-cols-1 sm:grid-cols-2">
+      <RatingDisplay label="Contribution" :rating="props.assessment.rating.contribution"/>
+      <RatingDisplay label="Teamwork" :rating="props.assessment.rating.teamwork"/>
+      <RatingDisplay label="Reliability" :rating="props.assessment.rating.reliability"/>
+      <RatingDisplay label="Quality" :rating="props.assessment.rating.quality"/>
+    </div>
     {{ props.assessment.justification }}
   </Panel>
 </template>
@@ -23,6 +25,7 @@
 const props = defineProps(["assessment"])
 
 import { computed } from 'vue'
+import RatingDisplay from './RatingDisplay.vue'
 const colors = [
   "oklch(63.7% 0.237 25.331)",
   "oklch(70.5% 0.213 47.604)",
@@ -33,6 +36,10 @@ const colors = [
   "oklch(69.6% 0.17 162.48)"
 ]
 const barcolor = computed(() => colors[Math.round(props.assessment.rating/100*colors.length)])
+const getbarcss = (rating) => {
+  let color = colors[Math.round(rating/100*colors.length)]
+  return { value: { style: `background: ${color}` } }
+}
 const emit = defineEmits(["remove"])
 const remove = () => emit("remove")
 </script>

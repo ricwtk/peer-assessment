@@ -32,10 +32,47 @@
         <Button icon="pi pi-times" @click="removefromrating(index)"/>
       </Tag>
     </div>
+    <div>
+      <div>Contribution</div>
+      <div class="text-xs">How much work did this member actually do? (ideas, effort, deliverables)</div>
+    </div>
     <InputGroup class="justify-stretch">
       <Button v-for="x in 21" class="!text-xs grow shrink !border-0" 
-        @click="setrating(x)" 
-        :class="getclassforratingbutton(x)">
+        @click="setrating('contribution',x)" 
+        :class="getclassforratingbutton('contribution',x)">
+        {{ convertcounttopercentage(x) }}
+      </Button>
+    </InputGroup>
+    <div>
+      <div>Teamwork</div>
+      <div class="text-xs">How well did this member work with others? (communication, support, attitude)</div>
+    </div>
+    <InputGroup class="justify-stretch">
+      <Button v-for="x in 21" class="!text-xs grow shrink !border-0" 
+        @click="setrating('teamwork',x)" 
+        :class="getclassforratingbutton('teamwork',x)">
+        {{ convertcounttopercentage(x) }}
+      </Button>
+    </InputGroup>
+    <div>
+      <div>Reliability</div>
+      <div class="text-xs">Could you count on this person? (met deadlines, showed up, followed through)</div>
+    </div>
+    <InputGroup class="justify-stretch">
+      <Button v-for="x in 21" class="!text-xs grow shrink !border-0" 
+        @click="setrating('reliability',x)" 
+        :class="getclassforratingbutton('reliability',x)">
+        {{ convertcounttopercentage(x) }}
+      </Button>
+    </InputGroup>
+    <div>
+      <div>Quality of Work</div>
+      <div class="text-xs">Was their work up to standard? (accuracy, detail, presentation, clarity)</div>
+    </div>
+    <InputGroup class="justify-stretch">
+      <Button v-for="x in 21" class="!text-xs grow shrink !border-0" 
+        @click="setrating('quality',x)" 
+        :class="getclassforratingbutton('quality',x)">
         {{ convertcounttopercentage(x) }}
       </Button>
     </InputGroup>
@@ -64,18 +101,23 @@ const pendingMembers = computed(() => props.pendinglist.filter((m) => !selectedM
 const removefromrating = (i) => {
   selectedMembers.value.splice(i,1)
 }
-const selectedRating = ref(0)
+const selectedRating = ref({
+  contribution: 0,
+  teamwork: 0,
+  reliability: 0,
+  quality: 0
+})
 const convertcounttopercentage = (count) => (count-1)*5
-const setrating = (count) => {
-  selectedRating.value = convertcounttopercentage(count)
+const setrating = (aspect, count) => {
+  selectedRating.value[aspect] = convertcounttopercentage(count)
 }
 const ratingColorN = 6
-const getclassforratingbutton = (count) => {
+const getclassforratingbutton = (aspect,count) => {
   let rating = convertcounttopercentage(count)
-  if (rating > selectedRating.value) { return "!bg-white !text-primary" }
+  if (rating > selectedRating.value[aspect]) { return "!bg-white !text-primary" }
   else {
     let cls = "!text-white"
-    let indexforcolor = Math.round(selectedRating.value/100*ratingColorN)
+    let indexforcolor = Math.round(selectedRating.value[aspect]/100*ratingColorN)
     return `${cls} rating-color-${indexforcolor}`
   }
 }
@@ -90,11 +132,11 @@ const saveassessment = () => {
   else {
     emit("save", {
       members: selectedMembers.value.map(x => ({ id: x.id, name: x.name })),
-      rating: selectedRating.value,
+      rating: Object.fromEntries(Object.entries(selectedRating.value).map(([k,v]) => [k, v])),
       justification: justificationText.value
     })
     selectedMembers.value = []
-    selectedRating.value = 0
+    Object.keys(selectedRating.value).map(k => { selectedRating.value[k] = 0 })
     justificationText.value = ""
     errormessage.value = ""
   }

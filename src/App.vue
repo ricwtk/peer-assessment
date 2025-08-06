@@ -17,7 +17,7 @@
       </template>
       <div class="flex flex-col gap-2">
         <AssessorLogIn :courses="courses" @defineassessor="loadmembers"/>
-        <Message severity="error" v-if="loginerror">{{ loginerror }}</Message>
+        <Message severity="error" v-if="loginerror"><strong>Error</strong> {{ loginerror }}</Message>
       </div>
     </Panel>
     <Panel v-if="assessor.id !== ''">
@@ -40,7 +40,7 @@
       <AssessmentDisplay v-for="(asm, index) in assessmentlist" :assessment="asm" @remove="deleteassessment(index)"></AssessmentDisplay>
       <Button class="self-end" @click="submitAssessments">Submit Assessment</Button>
       <Message severity="success" v-if="submissionsuccess">{{ submissionsuccess }}</Message>
-      <Message severity="error" v-if="submissionerror">{{ submissionerror }}</Message>
+      <Message severity="error" v-if="submissionerror"><strong>Error</strong> {{ submissionerror }}</Message>
     </Panel>
   </div>
 </template>
