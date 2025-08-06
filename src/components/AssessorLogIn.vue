@@ -49,7 +49,8 @@ const loadmembers = () => {
     course: { 
       key: selectedCourse.value.course_key, 
       name: selectedCourse.value.course_name, 
-      code: selectedCourse.value.course_code 
+      code: selectedCourse.value.course_code ,
+      lecturers: selectedCourse.value.course_lecturers.map(l => ({ name: l.name, email: l.email }))
     },
     assessor: { 
       id: selectedPerson.value.id,

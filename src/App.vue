@@ -104,6 +104,7 @@ const loadmembers = (login) => {
   assessingcourse.value.key = login.course.key
   assessingcourse.value.code = login.course.code
   assessingcourse.value.name = login.course.name
+  assessingcourse.value.lecturers = login.course.lecturers.map(l => ({ name: l.name, email: l.email}))
   assessmentlist.value = []
   getStudentGroup(login.course.key, login.assessor.id, login.pin);
 }
@@ -115,7 +116,8 @@ const assessor = ref({
 const assessingcourse = ref({
   key: "",
   code: "",
-  name: ""
+  name: "",
+  lecturers: []
 })
 
 const memberlist = ref([])
@@ -139,30 +141,28 @@ async function submitAssessments() {
   submissionerror.value = ""
   submissionsuccess.value = ""
   try {
-    console.log(JSON.stringify({
+    let req_body = JSON.stringify({
       assessor: { id: assessor.value.id, name: assessor.value.name },
-      course: { key: assessingcourse.value.key, code: assessingcourse.value.code, name: assessingcourse.value.name }, 
+      course: { 
+        key: assessingcourse.value.key, 
+        code: assessingcourse.value.code, 
+        name: assessingcourse.value.name,
+        lecturers: assessingcourse.value.lecturers.map(l => ({ name: l.name, email: l.email}))
+      }, 
       assessments: assessmentlist.value.map(asm => ({
         members: asm.members.map(x => ({ id: x.id, name: x.name })),
         rating: asm.rating,
         justification: asm.justification
       }))
-    }))
+    })
+    console.log(req_body)
     console.log(SUBMISSION_ENDPOINT)
     const response = await fetch(`${SUBMISSION_ENDPOINT}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        assessor: { id: assessor.value.id, name: assessor.value.name },
-        course: { key: assessingcourse.value.key, code: assessingcourse.value.code, name: assessingcourse.value.name }, 
-        assessments: assessmentlist.value.map(asm => ({
-          members: asm.members.map(x => ({ id: x.id, name: x.name })),
-          rating: asm.rating,
-          justification: asm.justification
-        }))
-      })
+      body: req_body
     });
 
     if (!response.ok) {
