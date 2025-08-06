@@ -32,6 +32,7 @@ const courselist = computed(() => props.courses.map(c => {
 const personlist = computed(() => {
   if (selectedCourse.value == "") { return [] }
   else {
+    selectedCourse.value.students.sort((a, b) => a.id.localeCompare(b.id))
     return selectedCourse.value.students.map(s => {
       s.display = `${s.id} ${s.name}`
       return s

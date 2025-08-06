@@ -60,6 +60,7 @@ async function fetchCourses() {
     const data = await response.json();
     console.log("Courses:", data);
     courses.value = data
+    courses.value.sort((a, b) => a.course_code.localeCompare(b.course_code))
   } catch (error) {
     console.error("Error fetching courses:", error);
   }
