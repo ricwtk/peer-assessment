@@ -39,7 +39,9 @@
         </tbody></table>
       </Message>
       <Editor v-model="emailtemplate" editorStyle="height: 320px" />
-      <div>{{ emailtemplate }}</div>
+      <Editor v-model="sampleemail" editorStyle="height: 320px" readonly pt:toolbar:class="!bg-primary !text-white">
+        <template v-slot:toolbar><div class="">Sample email</div></template>
+      </Editor>
     </Panel>
     <Panel v-if="studentlist.length > 0" pt:content:class="flex flex-col gap-2">
       <template #header>
@@ -71,7 +73,7 @@ import { API_BASE_URL } from './config';
 // import AssessForm from './components/AssessForm.vue';
 // import AssessmentDisplay from './components/AssessmentDisplay.vue';
 // import AssessorLogIn from './components/AssessorLogIn.vue';
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import { addon } from '@primeuix/themes/aura/inputgroup';
 
 const courses = ref([])
@@ -112,11 +114,13 @@ async function getStudentList(courseKey, pin) {
     }
 
     const data = await response.json();
+    selectedCourse.value = data.course
     studentlist.value = Object.keys(data.students).sort().map(k => {
       let x = data.students[k]
       x.id = k
       return x
     })
+    console.log("Course", selectedCourse.value)
     console.log("Students:", studentlist.value);
   } catch (error) {
     loginerror.value = error.message;
@@ -128,10 +132,20 @@ const adminlogin = (login) => {
   getStudentList(login.course.key, login.pin)
 }
 
+const selectedCourse = ref({})
+
 const cclist = ref("")
 const bcclist = ref("")
 const emailtemplate = ref('<p>Hi&nbsp;%student_name%,</p><p></p><p>You&nbsp;are&nbsp;required&nbsp;to&nbsp;complete&nbsp;the&nbsp;peer&nbsp;assessment&nbsp;for&nbsp;%course_code%&nbsp;%course_name%.</p><p></p><ol><li>Go&nbsp;to&nbsp;<a href="https://ricwtk.github.io/peer-assessment/" rel="noopener noreferrer" target="_blank">https://ricwtk.github.io/peer-assessment/</a></li><li>Select&nbsp;%course_code%&nbsp;%course_name%&nbsp;from&nbsp;the&nbsp;dropdown&nbsp;list</li><li>Select&nbsp;your&nbsp;student&nbsp;ID&nbsp;and&nbsp;name&nbsp;from&nbsp;the&nbsp;dropdown&nbsp;list</li><li>Provide&nbsp;this&nbsp;PIN:&nbsp;<strong><u>%pin%</u></strong></li><li>Complete&nbsp;the&nbsp;peer&nbsp;assessment</li></ol><p></p><p>The&nbsp;average&nbsp;rating&nbsp;for&nbsp;each&nbsp;student&nbsp;will&nbsp;be&nbsp;used&nbsp;to&nbsp;modify&nbsp;the&nbsp;final&nbsp;marks&nbsp;he/she&nbsp;will&nbsp;get.&nbsp;If&nbsp;the&nbsp;group&nbsp;obtains&nbsp;70&nbsp;marks&nbsp;for&nbsp;the&nbsp;assignment,&nbsp;and&nbsp;the&nbsp;student&nbsp;gets&nbsp;90%&nbsp;from&nbsp;the&nbsp;rating,&nbsp;the&nbsp;final&nbsp;marks&nbsp;the&nbsp;student&nbsp;gets&nbsp;will&nbsp;be&nbsp;90%&nbsp;x&nbsp;70&nbsp;marks&nbsp;=&nbsp;63&nbsp;marks.</p><p></p><p>This&nbsp;form&nbsp;must&nbsp;be&nbsp;completed&nbsp;privately&nbsp;and&nbsp;your&nbsp;scores&nbsp;will&nbsp;only&nbsp;be&nbsp;known&nbsp;to&nbsp;the&nbsp;supervisors.&nbsp;Your&nbsp;supervisors&nbsp;may&nbsp;moderate&nbsp;the&nbsp;marks&nbsp;accordingly&nbsp;to&nbsp;ensure&nbsp;its&nbsp;truly&nbsp;reflective&nbsp;of&nbsp;the&nbsp;quality&nbsp;of&nbsp;work&nbsp;submitted.&nbsp;</p><p></p><p>Regards,</p><p>Richard</p>')
 
+const sampleemail = computed(() => 
+  emailtemplate.value
+  .replace("%course_code%", selectedCourse.value.code)
+  .replace("%course_name%", selectedCourse.value.name)
+  .replace("%student_id%", "123456")
+  .replace("%student_name%", "Tim Stevenson")
+  .replace("%pin%", "wx12d4")
+)
 const selectedStudents = ref([])
 
 const emailerror = ref("")
