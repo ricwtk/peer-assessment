@@ -156,8 +156,8 @@ async function submitAssessments() {
         justification: asm.justification
       }))
     })
-    console.log(req_body)
-    console.log(SUBMISSION_ENDPOINT)
+    // console.log(req_body)
+    // console.log(SUBMISSION_ENDPOINT)
     const response = await fetch(`${SUBMISSION_ENDPOINT}`, {
       method: "POST",
       headers: {

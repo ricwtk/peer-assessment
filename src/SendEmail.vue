@@ -42,6 +42,7 @@
       <Editor v-model="sampleemail" editorStyle="height: 320px" readonly pt:toolbar:class="!bg-primary !text-white">
         <template v-slot:toolbar><div class="">Sample email</div></template>
       </Editor>
+      <div class="hidden">{{ emailtemplate }}</div>
     </Panel>
     <Panel v-if="studentlist.length > 0" pt:content:class="flex flex-col gap-2">
       <template #header>
@@ -56,7 +57,6 @@
         <Column field="name" header="Student Name"></Column>
         <Column field="pin" header="PIN"></Column>
       </DataTable>
-      {{ selectedStudents }}
       <Button class="self-end" @click="sendEmail">Send Email</Button>
       <Message severity="success" v-if="emailsuccess">{{ emailsuccess }}</Message>
       <Message severity="error" v-if="emailerror"><strong>Error</strong> {{ emailerror }}</Message>
@@ -67,14 +67,8 @@
 <script setup>
 import TopBar from './components/TopBar.vue';
 import AdminLogin from './components/AdminLogin.vue';
-import { API_BASE_URL } from './config';
-
-// import { API_BASE_URL, SUBMISSION_ENDPOINT } from './config';
-// import AssessForm from './components/AssessForm.vue';
-// import AssessmentDisplay from './components/AssessmentDisplay.vue';
-// import AssessorLogIn from './components/AssessorLogIn.vue';
+import { API_BASE_URL, EMAIL_ENDPOINT } from './config';
 import { ref, computed } from "vue"
-import { addon } from '@primeuix/themes/aura/inputgroup';
 
 const courses = ref([])
 async function fetchCourses() {
@@ -136,15 +130,15 @@ const selectedCourse = ref({})
 
 const cclist = ref("")
 const bcclist = ref("")
-const emailtemplate = ref('<p>Hi&nbsp;%student_name%,</p><p></p><p>You&nbsp;are&nbsp;required&nbsp;to&nbsp;complete&nbsp;the&nbsp;peer&nbsp;assessment&nbsp;for&nbsp;%course_code%&nbsp;%course_name%.</p><p></p><ol><li>Go&nbsp;to&nbsp;<a href="https://ricwtk.github.io/peer-assessment/" rel="noopener noreferrer" target="_blank">https://ricwtk.github.io/peer-assessment/</a></li><li>Select&nbsp;%course_code%&nbsp;%course_name%&nbsp;from&nbsp;the&nbsp;dropdown&nbsp;list</li><li>Select&nbsp;your&nbsp;student&nbsp;ID&nbsp;and&nbsp;name&nbsp;from&nbsp;the&nbsp;dropdown&nbsp;list</li><li>Provide&nbsp;this&nbsp;PIN:&nbsp;<strong><u>%pin%</u></strong></li><li>Complete&nbsp;the&nbsp;peer&nbsp;assessment</li></ol><p></p><p>The&nbsp;average&nbsp;rating&nbsp;for&nbsp;each&nbsp;student&nbsp;will&nbsp;be&nbsp;used&nbsp;to&nbsp;modify&nbsp;the&nbsp;final&nbsp;marks&nbsp;he/she&nbsp;will&nbsp;get.&nbsp;If&nbsp;the&nbsp;group&nbsp;obtains&nbsp;70&nbsp;marks&nbsp;for&nbsp;the&nbsp;assignment,&nbsp;and&nbsp;the&nbsp;student&nbsp;gets&nbsp;90%&nbsp;from&nbsp;the&nbsp;rating,&nbsp;the&nbsp;final&nbsp;marks&nbsp;the&nbsp;student&nbsp;gets&nbsp;will&nbsp;be&nbsp;90%&nbsp;x&nbsp;70&nbsp;marks&nbsp;=&nbsp;63&nbsp;marks.</p><p></p><p>This&nbsp;form&nbsp;must&nbsp;be&nbsp;completed&nbsp;privately&nbsp;and&nbsp;your&nbsp;scores&nbsp;will&nbsp;only&nbsp;be&nbsp;known&nbsp;to&nbsp;the&nbsp;supervisors.&nbsp;Your&nbsp;supervisors&nbsp;may&nbsp;moderate&nbsp;the&nbsp;marks&nbsp;accordingly&nbsp;to&nbsp;ensure&nbsp;its&nbsp;truly&nbsp;reflective&nbsp;of&nbsp;the&nbsp;quality&nbsp;of&nbsp;work&nbsp;submitted.&nbsp;</p><p></p><p>Regards,</p><p>Richard</p>')
+const emailtemplate = ref('<p>Hi&nbsp;%student_name%,</p><p></p><p>You&nbsp;are&nbsp;required&nbsp;to&nbsp;complete&nbsp;the&nbsp;peer&nbsp;assessment&nbsp;for&nbsp;%course_code%&nbsp;%course_name%.</p><p></p><ol><li>Go&nbsp;to&nbsp;<a href="https://ricwtk.github.io/peer-assessment/" rel="noopener noreferrer" target="_blank">https://ricwtk.github.io/peer-assessment/</a></li><li>Select&nbsp;%course_code%&nbsp;%course_name%&nbsp;from&nbsp;the&nbsp;&quot;Course&quot;&nbsp;dropdown&nbsp;list</li><li>Select&nbsp;your&nbsp;student&nbsp;ID&nbsp;and&nbsp;name&nbsp;from&nbsp;the&nbsp;&quot;Yourself&quot;&nbsp;dropdown&nbsp;list</li><li>Provide&nbsp;this&nbsp;PIN:&nbsp;<strong><u>%pin%</u></strong></li><li>Add&nbsp;assessments&nbsp;for&nbsp;your&nbsp;members.&nbsp;You&nbsp;may&nbsp;group&nbsp;different&nbsp;members&nbsp;under&nbsp;the&nbsp;same&nbsp;rating&nbsp;and&nbsp;justification</li><li>Submit&nbsp;the&nbsp;peer&nbsp;assessment</li></ol><p></p><p>The&nbsp;average&nbsp;rating&nbsp;for&nbsp;each&nbsp;student&nbsp;will&nbsp;be&nbsp;used&nbsp;to&nbsp;modify&nbsp;the&nbsp;final&nbsp;marks&nbsp;he/she&nbsp;will&nbsp;get.&nbsp;If&nbsp;the&nbsp;group&nbsp;obtains&nbsp;70&nbsp;marks&nbsp;for&nbsp;the&nbsp;assignment,&nbsp;and&nbsp;the&nbsp;student&nbsp;gets&nbsp;90%&nbsp;from&nbsp;the&nbsp;rating,&nbsp;the&nbsp;final&nbsp;marks&nbsp;the&nbsp;student&nbsp;gets&nbsp;will&nbsp;be&nbsp;90%&nbsp;x&nbsp;70&nbsp;marks&nbsp;=&nbsp;63&nbsp;marks.</p><p></p><p>This&nbsp;form&nbsp;must&nbsp;be&nbsp;completed&nbsp;privately&nbsp;and&nbsp;your&nbsp;scores&nbsp;will&nbsp;only&nbsp;be&nbsp;known&nbsp;to&nbsp;the&nbsp;supervisors.&nbsp;Your&nbsp;supervisors&nbsp;may&nbsp;moderate&nbsp;the&nbsp;marks&nbsp;accordingly&nbsp;to&nbsp;ensure&nbsp;its&nbsp;truly&nbsp;reflective&nbsp;of&nbsp;the&nbsp;quality&nbsp;of&nbsp;work&nbsp;submitted.&nbsp;</p><p></p><p>Regards,</p><p>Richard</p>')
 
 const sampleemail = computed(() => 
   emailtemplate.value
-  .replace("%course_code%", selectedCourse.value.code)
-  .replace("%course_name%", selectedCourse.value.name)
-  .replace("%student_id%", "123456")
-  .replace("%student_name%", "Tim Stevenson")
-  .replace("%pin%", "wx12d4")
+  .replaceAll("%course_code%", selectedCourse.value.code)
+  .replaceAll("%course_name%", selectedCourse.value.name)
+  .replaceAll("%student_id%", "123456")
+  .replaceAll("%student_name%", "Tim Stevenson")
+  .replaceAll("%pin%", "wx12d4")
 )
 const selectedStudents = ref([])
 
@@ -154,40 +148,37 @@ async function sendEmail() {
   emailerror.value = ""
   emailsuccess.value = ""
   try {
-//     let req_body = JSON.stringify({
-//       assessor: { id: assessor.value.id, name: assessor.value.name },
-//       course: { 
-//         key: assessingcourse.value.key, 
-//         code: assessingcourse.value.code, 
-//         name: assessingcourse.value.name,
-//         lecturers: assessingcourse.value.lecturers.map(l => ({ name: l.name, email: l.email}))
-//       }, 
-//       assessments: assessmentlist.value.map(asm => ({
-//         members: asm.members.map(x => ({ id: x.id, name: x.name })),
-//         rating: asm.rating,
-//         justification: asm.justification
-//       }))
-//     })
-//     console.log(req_body)
-//     console.log(SUBMISSION_ENDPOINT)
-//     const response = await fetch(`${SUBMISSION_ENDPOINT}`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json"
-//       },
-//       body: req_body
-//     });
+    let req_body = JSON.stringify({
+      course: { 
+        key: selectedCourse.value.key, 
+        code: selectedCourse.value.code, 
+        name: selectedCourse.value.name,
+      }, 
+      students: selectedStudents.value,
+      emailtemplate: emailtemplate.value,
+      cclist: cclist.value,
+      bcclist: bcclist.value
+    })
+    // console.log(req_body)
+    // console.log(EMAIL_ENDPOINT)
+    const response = await fetch(`${EMAIL_ENDPOINT}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: req_body
+    });
 
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       submissionerror.value = errorData.error || "Unknown error";
-//       throw new Error(errorData.error || "Unknown error");
-//     } else {
-//       submissionsuccess.value = "Submission succeeded, you should receive an email with the submitted details."
-//     }
+    if (!response.ok) {
+      const errorData = await response.json();
+      emailerror.value = errorData.error || "Unknown error";
+      throw new Error(errorData.error || "Unknown error");
+    } else {
+      emailsuccess.value = "Submission succeeded, the students should receive their pin through their email."
+    }
   } catch (error) {
     emailerror.value = error.message;
-    console.error("Error submitting assessments:", error.message);
+    console.error("Error submitting email requests:", error.message);
   }
 }
 
