@@ -51,7 +51,9 @@
           <div class="font-bold">Email pin to selected students</div>
         </div>
       </template>
-      <DataTable :value="studentlist" v-model:selection="selectedStudents" size="small">
+      <Message severity="info" v-if="selectedStudents.length == 0">No student is selected</Message>
+      <Message severity="info" v-else>{{ selectedStudents.length }} student{{ selectedStudents.length > 1 ? 's are' : ' is' }} selected</Message>
+      <DataTable :value="studentlist" v-model:selection="selectedStudents" size="small" stripedRows>
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
         <Column field="id" header="Student ID"></Column>
         <Column field="name" header="Student Name"></Column>
