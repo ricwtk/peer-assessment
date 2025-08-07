@@ -15,5 +15,13 @@ export default defineConfig({
       ]
     })
   ],
-  base: "/peer-assessment/"
+  base: "/peer-assessment/",
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        sendemail: path.resolve(__dirname, 'sendemail.html'),
+      }
+    }
+  }
 })
