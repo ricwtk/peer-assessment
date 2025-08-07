@@ -38,7 +38,7 @@
         </div>
       </template>
       <AssessmentDisplay v-for="(asm, index) in assessmentlist" :assessment="asm" @remove="deleteassessment(index)"></AssessmentDisplay>
-      <Button class="self-end" @click="submitAssessments">Submit Assessment</Button>
+      <Button class="self-end" @click="submitAssessments" :disabled="assessmentlist.length < 1">Submit Assessment</Button>
       <Message severity="success" v-if="submissionsuccess">{{ submissionsuccess }}</Message>
       <Message severity="error" v-if="submissionerror"><strong>Error</strong> {{ submissionerror }}</Message>
     </Panel>
